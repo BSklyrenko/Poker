@@ -1,37 +1,37 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import io from "socket.io-client";
-import logo from "./logo.svg";
-import "./App.css";
+import { MainWrapper } from "style/MainWrapper";
+import { Table } from "components/Table";
+import { createGlobalStyle } from "styled-components";
 
-class App extends Component {
-  componentDidMount() {
-    // const socket = io();
+const GlobalStyle = createGlobalStyle`
+  body, button {
+    font-family: Arial, Helvetica, sans-serif, sans-serif;
+  }
+`;
+
+const App = () => {
+  const [socket, setSocket] = useState(null);
+
+  function connectToServer() {
     const socket = io("http://localhost:7777");
-    socket.on("frame", data => {
-      console.log(data, 1234);
+    socket.on("connect", () => {
+      if (socket.connected) {
+        console.log("%cEstablished socket connection", "color: red;");
+      }
     });
+
+    setSocket(socket);
   }
 
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
-}
+  return (
+    <React.Fragment>
+      <GlobalStyle />
+      <MainWrapper>
+        <Table socket={socket} connectToServer={connectToServer} />
+      </MainWrapper>
+    </React.Fragment>
+  );
+};
 
 export default App;
