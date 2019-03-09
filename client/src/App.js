@@ -15,13 +15,17 @@ const App = () => {
 
   function connectToServer() {
     const socket = io("http://localhost:7777");
+
     socket.on("connect", () => {
       if (socket.connected) {
         console.log("%cEstablished socket connection", "color: red;");
+        setSocket(socket);
       }
     });
 
-    setSocket(socket);
+    socket.on("frame", data => {
+      console.log(data, 1234);
+    });
   }
 
   return (

@@ -1,0 +1,7 @@
+const ADD_PLAYER = "ADD_PLAYER";
+const REMOVE_PLAYER = "REMOVE_PLAYER";
+
+module.exports = {
+  ADD_PLAYER,
+  REMOVE_PLAYER
+};
