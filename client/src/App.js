@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import { MainWrapper } from "style/MainWrapper";
 import { Table } from "components/Table";
 import { createGlobalStyle } from "styled-components";
+import { config } from "config";
 
 const GlobalStyle = createGlobalStyle`
   body, button {
@@ -13,8 +14,15 @@ const GlobalStyle = createGlobalStyle`
 const App = () => {
   const [socket, setSocket] = useState(null);
 
+  useEffect(() => {
+    (async function() {
+      const res = await fetch(`${config.host}/config`);
+      console.log(res);
+    })();
+  });
+
   function connectToServer() {
-    const socket = io("http://localhost:7777");
+    const socket = io(config.host);
 
     socket.on("connect", () => {
       if (socket.connected) {

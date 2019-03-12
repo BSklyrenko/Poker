@@ -1,36 +1,41 @@
-const express = require("express");
-const http = require("http");
-const socket = require("socket.io");
+const express = require('express');
+const http = require('http');
+const socket = require('socket.io');
+const cors = require('cors');
 
 const app = express();
 const server = http.Server(app);
 const io = socket(server);
 
-const config = require("./config");
-const store = require("./src/store");
-const actions = require("./src/actions");
-const createPlayer = require("./src/lib/createPlayer");
+const config = require('config');
+const store = require('src/store');
+const actions = require('src/actions');
+const create_player = require('src/lib/create_player');
+const cards_config = require('src/cards_map');
 
-io.on("connection", socket => {
+app.use(express.static(__dirname + '/public'));
+app.use(cors());
+
+io.on('connection', (socket) => {
   console.log(`Connection established with ${socket.handshake.headers.origin}`);
-  const player = createPlayer();
-  store.dispatch(actions.addPlayer(player));
+  const player = create_player();
+  store.dispatch(actions.add_player(player));
 
-  socket.on("disconnect", () => {
-    console.log(
-      `Connection was closed with ${socket.handshake.headers.origin}`
-    );
-    store.dispatch(actions.removePlayer(player.id));
+  socket.on('disconnect', () => {
+    console.log(`Connection was closed with ${socket.handshake.headers.origin}`);
+    store.dispatch(actions.remove_player(player.id));
   });
 });
 
 store.subscribe(() => {
   const newStore = store.getState();
-  console.log("Store update");
-  console.log(newStore);
-  io.emit("frame", newStore);
+  io.emit('frame', newStore);
 });
 
 server.listen(config.port, () => {
   console.log(`Server listen on ${config.port}`);
+});
+
+app.get('/config', (req, res) => {
+  res.json(cards_config);
 });
