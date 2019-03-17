@@ -4,6 +4,7 @@ import { MainWrapper } from "style/MainWrapper";
 import { Table } from "components/Table";
 import { createGlobalStyle } from "styled-components";
 import { config } from "config";
+import { ConnectButton } from "style/ConnectButton";
 
 const GlobalStyle = createGlobalStyle`
   body, button {
@@ -12,13 +13,21 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const App = () => {
-  const [socket, setSocket] = useState(null);
+  // const [socket, setSocket] = useState(null);
+  const [cards, setCards] = useState(null);
+  const [game, setGame] = useState(null);
+  const [playerId, setPlayerId] = useState(null);
 
   useEffect(() => {
-    (async function() {
-      const res = await fetch(`${config.host}/config`);
-      console.log(res);
-    })();
+    if (!cards) {
+      fetch(`${config.host}/config`)
+        .then(response => {
+          return response.json();
+        })
+        .then(config => {
+          setCards(config);
+        });
+    }
   });
 
   function connectToServer() {
@@ -27,12 +36,16 @@ const App = () => {
     socket.on("connect", () => {
       if (socket.connected) {
         console.log("%cEstablished socket connection", "color: red;");
-        setSocket(socket);
+        // setSocket(socket);
       }
     });
 
+    socket.on("setId", data => {
+      setPlayerId(data);
+    });
+
     socket.on("frame", data => {
-      console.log(data, 1234);
+      setGame(data);
     });
   }
 
@@ -40,7 +53,13 @@ const App = () => {
     <React.Fragment>
       <GlobalStyle />
       <MainWrapper>
-        <Table socket={socket} connectToServer={connectToServer} />
+        {game ? (
+          <Table game={game} playerId={playerId} />
+        ) : (
+          <ConnectButton onClick={connectToServer}>
+            Connect to server
+          </ConnectButton>
+        )}
       </MainWrapper>
     </React.Fragment>
   );

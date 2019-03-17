@@ -50,7 +50,8 @@ const CARDS = {
   SPADES_JACK: 49,
   SPADES_QUEEN: 50,
   SPADES_KING: 51,
-  SPADES_ACE: 52
+  SPADES_ACE: 52,
+  BACK: 53,
 };
 
 module.exports = CARDS;

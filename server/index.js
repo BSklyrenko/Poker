@@ -1,7 +1,12 @@
+// require('dotenv').config();
+process.env.NODE_PATH = __dirname;
+require('module').Module._initPaths();
+
 const express = require('express');
 const http = require('http');
 const socket = require('socket.io');
 const cors = require('cors');
+const ramda = require('ramda');
 
 const app = express();
 const server = http.Server(app);
@@ -25,11 +30,13 @@ io.on('connection', (socket) => {
     console.log(`Connection was closed with ${socket.handshake.headers.origin}`);
     store.dispatch(actions.remove_player(player.id));
   });
+
+  socket.emit('setId', player.id);
 });
 
 store.subscribe(() => {
   const newStore = store.getState();
-  io.emit('frame', newStore);
+  io.emit('frame', ramda.dissoc('cards', newStore));
 });
 
 server.listen(config.port, () => {

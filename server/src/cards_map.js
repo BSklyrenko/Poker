@@ -212,6 +212,10 @@ const cards_map = {
     id: CARDS.SPADES_ACE,
     img: `${config.host}:${config.port}/images/cards/ace_of_hearts.svg`,
   },
+  [CARDS.BACK]: {
+    id: CARDS.BACK,
+    img: `${config.host}:${config.port}/images/cards/card_back.svg`,
+  },
 };
 
 module.exports = cards_map;
